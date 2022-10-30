@@ -6,8 +6,9 @@ import (
 )
 
 var (
-	AppMode    string
-	HttpPort   string
+	AppMode  string
+	HttpPort string
+
 	Db         string
 	DbHost     string
 	DbPort     string
