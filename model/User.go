@@ -2,13 +2,15 @@ package model
 
 import (
 	"github.com/ginblog/utils/errmsg"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
+	"log"
 )
 
 type User struct {
 	gorm.Model
 	Username string `gorm:"type:varchar(20);not null" json:"username"`
-	Password string `gorm:"type:varchar(20);not null" json:"password"`
+	Password string `gorm:"type:varchar(200);not null" json:"password"`
 	Role     int    `gorm:"type:int" json:"role"`
 }
 
@@ -24,6 +26,7 @@ func CheckUser(name string) int {
 
 // 新增用户
 func CreateUser(data *User) int {
+	data.Password = EncodePassword(data.Password)
 	err := db.Create(&data).Error
 	if err != nil {
 		return errmsg.ERROR // 500
@@ -39,4 +42,14 @@ func GetUsers(pageSize, pageNum int) []User {
 		return nil
 	}
 	return users
+}
+
+// 密码加密
+func EncodePassword(password string) string {
+	const DefaultCost int = 10
+	hash, err := bcrypt.GenerateFromPassword([]byte(password), DefaultCost)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return string(hash)
 }
