@@ -26,7 +26,7 @@ func CheckUser(name string) int {
 
 // 新增用户
 func CreateUser(data *User) int {
-	data.Password = EncodePassword(data.Password)
+	//data.Password = EncodePassword(data.Password)
 	err := db.Create(&data).Error
 	if err != nil {
 		return errmsg.ERROR // 500
@@ -44,7 +44,35 @@ func GetUsers(pageSize, pageNum int) []User {
 	return users
 }
 
+// 编辑用户
+func EditUser(id int, data *User) int {
+	var user User
+	var updatemap = make(map[string]interface{})
+	updatemap["username"] = data.Username
+	updatemap["role"] = data.Role
+	err := db.Model(&user).Where("id = ?", id).Updates(updatemap).Error
+	if err != nil {
+		return errmsg.ERROR // 500
+	}
+	return errmsg.SUCCESS // 200
+}
+
+//删除用户
+func DeleteUser(id int) int {
+	var user User
+	err := db.Where("id = ?", id).Delete(&user).Error
+	if err != nil {
+		return errmsg.ERROR // 500
+	}
+	return errmsg.SUCCESS // 200
+}
+
 // 密码加密
+func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
+	u.Password = EncodePassword(u.Password)
+	return nil
+}
+
 func EncodePassword(password string) string {
 	const DefaultCost int = 10
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), DefaultCost)
