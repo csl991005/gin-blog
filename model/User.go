@@ -81,3 +81,20 @@ func EncodePassword(password string) string {
 	}
 	return string(hash)
 }
+
+// 登录验证
+func CheckLogin(username, password string) int {
+	var user User
+	db.Where("username = ?", username).First(&user)
+	if user.ID == 0 {
+		return errmsg.ERROR_USER_NOT_EXIST
+	}
+	passWordError := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+	if passWordError != nil {
+		return errmsg.ERROR_PASSWORD_WRONG
+	}
+	if user.Role != 0 {
+		return errmsg.ERROR_USER_NOT_PERMISSION
+	}
+	return errmsg.SUCCESS
+}
