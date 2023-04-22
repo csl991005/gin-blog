@@ -10,11 +10,13 @@ import (
 func InitRouter() {
 	gin.SetMode(utils.AppMode)
 	r := gin.Default()
+	r.Use(middleware.Cors())
 	auth := r.Group("api/v1")
 	auth.Use(middleware.JwtToken())
 	{
 		// 用户模块的路由接口
-		auth.PUT("user/:id", v1.EditUser)
+		auth.GET("user/:id", v1.UserExist)
+		auth.PUT("user/check", v1.EditUser)
 		auth.DELETE("user/:id", v1.DeleteUser)
 		// 分类模块的路由接口
 		auth.POST("category/add", v1.AddCategory)

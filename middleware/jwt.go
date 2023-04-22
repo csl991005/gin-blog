@@ -14,18 +14,20 @@ var JwtKey = []byte(utils.JwtKey)
 
 type MyClaims struct {
 	Username string `json:"username"`
-	jwt.StandardClaims
+	jwt.RegisteredClaims
 }
 
 var code int
 
 // 生成token
 func GererateToken(username string) (string, int) {
-	expireTime := time.Now().Add(10 * time.Hour)
+	expireTime := time.Now().Add(24 * time.Hour)
 	SetClaims := MyClaims{
 		username,
-		jwt.StandardClaims{
-			ExpiresAt: expireTime.Unix(),
+		jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(expireTime),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+			NotBefore: jwt.NewNumericDate(time.Now()),
 			Issuer:    "ginblog",
 		},
 	}
@@ -82,7 +84,7 @@ func JwtToken() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		if time.Now().Unix() > key.ExpiresAt {
+		if jwt.NewNumericDate(time.Now()).Unix() > key.ExpiresAt.Unix() {
 			code = errmsg.ERROR_TOKEN_RUNTIME
 			c.JSON(http.StatusOK, gin.H{
 				"code":    code,

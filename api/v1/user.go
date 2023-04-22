@@ -13,7 +13,20 @@ var code int
 
 // 查询用户是否存在
 func UserExist(c *gin.Context) {
+	userName := c.Query("username")
+	code := model.CheckUser(userName)
+	if code != errmsg.SUCCESS {
+		c.JSON(http.StatusOK, gin.H{
+			"status":  code,
+			"message": errmsg.GetErrMsg(code),
+		})
+	} else {
+		c.JSON(http.StatusOK, gin.H{
+			"status":  code,
+			"message": errmsg.GetErrMsg(code),
+		})
 
+	}
 }
 
 // 添加用户
