@@ -9,9 +9,9 @@ import (
 
 type User struct {
 	gorm.Model
-	Username string `gorm:"type:varchar(20);not null" json:"username" validate:"required,min=4,max=4" label:"用户名"`
+	Username string `gorm:"type:varchar(20);not null" json:"username" validate:"required,min=4,max=12" label:"用户名"`
 	Password string `gorm:"type:varchar(200);not null" json:"password" validate:"required,min=6,max=20" label:"密码"`
-	Role     int    `gorm:"type:int;DEFAULT:2" json:"role" validate:"required,gte=2" label:"角色"`
+	Role     int    `gorm:"type:int;DEFAULT:2" json:"role" validate:"required,gte=2" label:"角色"` // 1 为管理员
 }
 
 // 查询用户是否存在
@@ -35,10 +35,17 @@ func CreateUser(data *User) int {
 }
 
 // 查询用户列表
-func GetUsers(pageSize, pageNum int) ([]User, int64) {
+func GetUsers(username string, pageSize, pageNum int) ([]User, int64) {
+	var user User
 	var users []User
 	var total int64
-	err := db.Limit(pageSize).Offset((pageNum - 1) * pageSize).Find(&users).Count(&total).Error
+
+	if username == "" {
+		err = db.Limit(pageSize).Offset((pageNum - 1) * pageSize).Find(&users).Error
+	}
+
+	err = db.Where("username LIKE ?", username+"%").Limit(pageSize).Offset((pageNum - 1) * pageSize).Find(&users).Error
+	db.Model(&user).Count(&total)
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, 0
 	}

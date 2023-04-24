@@ -10,7 +10,8 @@
                     <a-button type="primary">新增</a-button>
                 </a-col>
             </a-row>
-            <a-table bordered rowKey="username" :columns="columns" :pagination="pagination" :dataSource="userlist">
+            <a-table bordered rowKey="username" :columns="columns" :pagination="pagination" :dataSource="userlist"
+                @change="handleTableChange">
                 <span slot="role" slot-scope="role">{{ role == 1 ? "管理员" : "订阅者" }}</span>
                 <template slot="action">
                     <div class="actionSlot">
@@ -61,14 +62,20 @@ export default {
         return {
             pagination: {
                 pageSizeOptions: ['5', '10', '20'],
-                defaultCurrent: 1,
-                defaultPageSize: 5,
+                // defaultCurrent: 1,
+                // defaultpageSize: 5,
+                pageSize: 5,
                 total: 0,
                 showSizeChanger: true,
                 showTotal: (total) => `共${total}条`,
             },
             userlist: [],
             columns,
+            queryParam: {
+                pageSize: 5,
+                pagenum: 1
+            },
+            visible: false
         }
     },
     created() {
@@ -78,8 +85,8 @@ export default {
         async getuserlist() {
             const { data: res } = await this.$http.get('users', {
                 params: {
-                    pagesize: this.pagination.defaultPageSize,
-                    pagenum: this.pagination.defaultCurrent
+                    pageSize: this.queryParam.pageSize,
+                    pagenum: this.queryParam.pagenum
                 }
             })
             console.log(res);
@@ -89,8 +96,20 @@ export default {
             this.userlist = res.data
             this.pagination.total = res.total
         }
-
     },
+    handleTableChange(pagination, filters, sorter) {
+        var pager = { ... this.pagination }
+        pager.current = pagination.current
+        pager.pageSize = pagination.pageSize
+        this.queryParam.pageSize = pagination.pageSize
+        this.queryParam.pagenum = pagination.current
+        if (pagination.pageSize !== this.pagination.pageSize) {
+            this.queryParam.pagenum = 1
+            pager.current = 1
+        }
+        this.pagination = pager
+        this.getUserList()
+    }
 }
 </script>
   
