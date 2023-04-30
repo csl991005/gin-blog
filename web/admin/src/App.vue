@@ -1,6 +1,6 @@
 <template>
   <!-- <a-locale-provider :locale="locale"> -->
-  <a-config-provider>
+  <a-config-provider :locale="locale">
     <div id="app">
       <router-view></router-view>
     </div>
@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import zhCN from 'ant-design-vue/lib/locale-provider/zh_CN';
+import zhCN from 'ant-design-vue/es/locale/zh_CN';
 export default {
   data() {
     return {
