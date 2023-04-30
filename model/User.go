@@ -34,19 +34,28 @@ func CreateUser(data *User) int {
 	return errmsg.SUCCESS // 200
 }
 
+// 查询单个用户
+func GetUser(id int) (User, int) {
+	var user User
+	err := db.Where("ID = ?", id).First(&user).Error
+	if err != nil {
+		return user, errmsg.ERROR
+	}
+	return user, errmsg.SUCCESS
+}
+
 // 查询用户列表
 func GetUsers(username string, pageSize, pageNum int) ([]User, int64) {
-	var user User
 	var users []User
 	var total int64
-	db.Model(&user).Count(&total)
 	if username == "" {
-		err = db.Limit(pageSize).Offset((pageNum - 1) * pageSize).Find(&users).Error
+		db.Limit(pageSize).Offset((pageNum - 1) * pageSize).Find(&users).Count(&total)
+		return users, total
 	}
 
-	err = db.Where("username LIKE ?", username+"%").Limit(pageSize).Offset((pageNum - 1) * pageSize).Find(&users).Error
+	db.Where("username LIKE ?", username+"%").Limit(pageSize).Offset((pageNum - 1) * pageSize).Find(&users).Count(&total)
 
-	if err != nil && err != gorm.ErrRecordNotFound {
+	if err == gorm.ErrRecordNotFound {
 		return nil, 0
 	}
 	return users, total
@@ -55,10 +64,10 @@ func GetUsers(username string, pageSize, pageNum int) ([]User, int64) {
 // 编辑用户
 func EditUser(id int, data *User) int {
 	var user User
-	var updatemap = make(map[string]interface{})
-	updatemap["username"] = data.Username
-	updatemap["role"] = data.Role
-	err := db.Model(&user).Where("id = ?", id).Updates(updatemap).Error
+	var maps = make(map[string]interface{})
+	maps["username"] = data.Username
+	maps["role"] = data.Role
+	err := db.Model(&user).Where("id = ?", id).Updates(maps).Error
 	if err != nil {
 		return errmsg.ERROR // 500
 	}

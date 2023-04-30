@@ -15,8 +15,8 @@ func InitRouter() {
 	auth.Use(middleware.JwtToken())
 	{
 		// 用户模块的路由接口
-		auth.GET("user/:id", v1.UserExist)
-		auth.PUT("user/check", v1.EditUser)
+		//auth.GET("user/:id", v1.UserExist)
+		auth.PUT("user/:id", v1.EditUser)
 		auth.DELETE("user/:id", v1.DeleteUser)
 		// 分类模块的路由接口
 		auth.POST("category/add", v1.AddCategory)
@@ -33,6 +33,7 @@ func InitRouter() {
 	{
 		router.POST("user/add", v1.AddUser)
 		router.GET("users", v1.GetUsers)
+		router.GET("user/:id", v1.GetUserInfo)
 		router.GET("category", v1.GetCategory)
 		router.GET("article", v1.GetArticle)
 		router.GET("article/list/:id", v1.GetCateArt)

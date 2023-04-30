@@ -4,24 +4,105 @@
         <a-card>
             <a-row :gutter="20">
                 <a-col :span="6">
-                    <a-input-search v-model="queryParam.username" placeholder="请输入用户名查找" enter-button allowClear
-                        @search="getUserList" />
+                    <a-input-search
+                        v-model="queryParam.username"
+                        placeholder="请输入用户名查找"
+                        enter-button
+                        allowClear
+                        @search="getUserList"
+                    />
                 </a-col>
                 <a-col :span="4">
-                    <a-button type="primary">新增</a-button>
+                    <a-button type="primary" @click="addUserVisible = true"
+                        >新增</a-button
+                    >
                 </a-col>
             </a-row>
-            <a-table bordered rowKey="username" :columns="columns" :pagination="pagination" :dataSource="userlist"
-                @change="handleTableChange">
-                <span slot="role" slot-scope="role">{{ role == 1 ? "管理员" : "订阅者" }}</span>
+            <a-table
+                bordered
+                rowKey="username"
+                :columns="columns"
+                :pagination="pagination"
+                :dataSource="userlist"
+                @change="handleTableChange"
+            >
+                <span slot="role" slot-scope="role">{{
+                    role == 1 ? '管理员' : '订阅者'
+                }}</span>
                 <template slot="action" slot-scope="data">
                     <div class="actionSlot">
-                        <a-button type="primary" style="margin-right: 15px;">编辑</a-button>
-                        <a-button type="danger" @click="deleteUser(data.ID)">删除</a-button>
+                        <a-button
+                            type="primary"
+                            style="margin-right: 15px"
+                            @click="editUser(data.ID)"
+                            >编辑</a-button
+                        >
+                        <a-button type="danger" @click="deleteUser(data.ID)"
+                            >删除</a-button
+                        >
                     </div>
                 </template>
             </a-table>
         </a-card>
+
+        <!-- 新增用户区域 -->
+        <a-modal
+            closable
+            width="60%"
+            title="新增用户"
+            :visible="addUserVisible"
+            @ok="addUserOk"
+            @cancel="addUserCancel"
+            destroyOnClose
+        >
+            <a-form-model :model="userInfo" :rules="userRules" ref="addUserRef">
+                <a-form-model-item label="用户名" prop="username">
+                    <a-input v-model="userInfo.username"></a-input>
+                </a-form-model-item>
+                <a-form-model-item has-feedback label="密码" prop="password">
+                    <a-input-password
+                        v-model="userInfo.password"
+                    ></a-input-password>
+                </a-form-model-item>
+                <a-form-model-item
+                    has-feedback
+                    label="确认密码"
+                    prop="checkpass"
+                >
+                    <a-input-password
+                        v-model="userInfo.checkpass"
+                    ></a-input-password>
+                </a-form-model-item>
+                <a-form-model-item label="是否为管理员" prop="role">
+                    <a-select defaultValue="2" @change="adminChange">
+                        <a-select-option key="1" value="1">是</a-select-option>
+                        <a-select-option key="2" value="2">否</a-select-option>
+                    </a-select>
+                </a-form-model-item>
+            </a-form-model>
+        </a-modal>
+        <!-- 编辑用户区域 -->
+        <a-modal
+            closable
+            width="60%"
+            title="编辑用户"
+            :visible="editUserVisible"
+            @ok="editUserOk"
+            @cancel="editUserCancel"
+            destroyOnClose
+        >
+            <a-form-model :model="userInfo" :rules="userRules" ref="addUserRef">
+                <a-form-model-item label="用户名" prop="username">
+                    <a-input v-model="userInfo.username"></a-input>
+                </a-form-model-item>
+                <a-form-model-item label="是否为管理员" prop="role">
+                    <a-select defaultValue="2" @change="adminChange">
+                        <a-select-option key="1" value="1">是</a-select-option>
+                        <a-select-option key="2" value="2">否</a-select-option>
+                    </a-select>
+                </a-form-model-item>
+            </a-form-model>
+        </a-modal>
     </div>
 </template>
   
@@ -55,7 +136,7 @@ const columns = [
         key: 'action',
         scopedSlots: { customRender: 'action' },
         align: 'center'
-    },
+    }
 ]
 
 export default {
@@ -68,16 +149,76 @@ export default {
                 pageSize: 5,
                 total: 0,
                 showSizeChanger: true,
-                showTotal: (total) => `共${total}条`,
+                showTotal: (total) => `共${total}条`
             },
             userlist: [],
             columns,
             queryParam: {
-                username: "",
+                username: '',
                 pageSize: 5,
                 pagenum: 1
             },
-            visible: false
+            userInfo: {
+                id: 0,
+                username: '',
+                password: '',
+                checkpass: '',
+                role: 2
+            },
+            visible: false,
+            addUserVisible: false,
+            userRules: {
+                username: [
+                    {
+                        required: true,
+                        message: '请输入用户名',
+                        trigger: 'blur'
+                    },
+                    {
+                        min: 4,
+                        max: 12,
+                        message: '用户名应当为4-12个字符',
+                        trigger: 'blur'
+                    }
+                ],
+                password: [
+                    {
+                        validator: (rule, value, callback) => {
+                            if (this.userInfo.password == '') {
+                                callback(new Error('请输入密码'))
+                            }
+                            if (
+                                [...this.userInfo.password].length < 6 ||
+                                [...this.userInfo.password].length > 20
+                            ) {
+                                callback(new Error('密码应当为6-20位'))
+                            } else {
+                                callback()
+                            }
+                        },
+                        trigger: 'blur'
+                    }
+                ],
+                checkpass: [
+                    {
+                        validator: (rule, value, callback) => {
+                            if (this.userInfo.checkpass == '') {
+                                callback(new Error('请输入密码'))
+                            }
+                            if (
+                                this.userInfo.password !==
+                                this.userInfo.checkpass
+                            ) {
+                                callback(new Error('密码不一致，请重新输入'))
+                            } else {
+                                callback()
+                            }
+                        },
+                        trigger: 'blur'
+                    }
+                ]
+            },
+            editUserVisible: false
         }
     },
     created() {
@@ -99,8 +240,9 @@ export default {
             this.userlist = res.data
             this.pagination.total = res.total
         },
+        // 更改分页
         handleTableChange(pagination, filters, sorter) {
-            var pager = { ... this.pagination }
+            var pager = { ...this.pagination }
             pager.current = pagination.current
             pager.pageSize = pagination.pageSize
             this.queryParam.pageSize = pagination.pageSize
@@ -112,6 +254,7 @@ export default {
             this.pagination = pager
             this.getUserList()
         },
+        // 删除用户
         deleteUser(id) {
             this.$confirm({
                 title: '提示',
@@ -126,11 +269,72 @@ export default {
                 },
                 onCancel: () => {
                     this.$message.info('已取消删除')
-                },
-            });
+                }
+            })
+        },
+        // 新增用户
+        addUserOk() {
+            this.$refs.addUserRef.validate(async (valid) => {
+                // console.log(valid);
+                if (!valid) {
+                    return this.$message.error('参数不符合要求，请重新输入')
+                }
+                const { data: res } = await this.$http.post('user/add', {
+                    username: this.userInfo.username,
+                    password: this.userInfo.password,
+                    role: this.userInfo.role
+                })
+                if (res.status !== 200) {
+                    return this.$message.error(res.message)
+                }
+                this.$message.success('添加用户成功')
+                this.addUserVisible = false
+                this.getUserList()
+            })
+        },
+        addUserCancel() {
+            this.$refs.addUserRef.resetFields()
+            this.addUserVisible = false
+            this.$message.info('编辑已取消')
+        },
+        adminChange(value) {
+            this.userInfo.role = value
+            // console.log(this.userInfo.role)
+        },
+        // 编辑用户
+        async editUser(id) {
+            this.editUserVisible = true
+            const { data: res } = await this.$http.get(`user/${id}`)
+            this.userInfo = res.data
+            this.userInfo.id = id
+        },
+        editUserOk() {
+            this.$refs.addUserRef.validate(async (valid) => {
+                // console.log(valid)
+                if (!valid) {
+                    return this.$message.error('参数不符合要求，请重新输入')
+                }
+                const { data: res } = await this.$http.put(
+                    `user/${this.userInfo.id}`,
+                    {
+                        username: this.userInfo.username,
+                        role: this.userInfo.role
+                    }
+                )
+                if (res.status !== 200) {
+                    return this.$message.error(res.message)
+                }
+                this.$message.success('更新用户成功')
+                this.editUserVisible = false
+                this.getUserList()
+            })
+        },
+        editUserCancel() {
+            this.$refs.addUserRef.resetFields()
+            this.editUserVisible = false
+            this.$message.info('编辑已取消')
         }
-    },
-
+    }
 }
 </script>
   
