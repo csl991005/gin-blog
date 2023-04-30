@@ -24,6 +24,18 @@ func CheckUser(name string) int {
 	return errmsg.SUCCESS // 200
 }
 
+func CheckUpUser(id int, name string) int {
+	var users *User
+	db.Select("id, username").Where("username = ?", name).First(&users)
+	if users.ID == uint(id) {
+		return errmsg.SUCCESS
+	}
+	if users.ID > 0 {
+		return errmsg.ERROR_USERNAME_USED // 1001
+	}
+	return errmsg.SUCCESS // 200
+}
+
 // 新增用户
 func CreateUser(data *User) int {
 	//data.Password = EncodePassword(data.Password)
