@@ -22,6 +22,13 @@ func CheckCategory(name string) int {
 
 // todo 查询分类下的所有文章
 
+// 查询单个分类信息
+func GetCateInfo(id int) (Category, int) {
+	var cate Category
+	db.Where("id = ?", id).First(&cate)
+	return cate, errmsg.SUCCESS
+}
+
 // 新增分类
 func CreateCategory(data *Category) int {
 	err := db.Create(&data).Error

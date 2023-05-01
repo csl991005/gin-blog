@@ -20,7 +20,7 @@
             </a-row>
             <a-table
                 bordered
-                rowKey="username"
+                rowKey="ID"
                 :columns="columns"
                 :pagination="pagination"
                 :dataSource="userlist"
@@ -286,6 +286,7 @@ export default {
         this.getUserList()
     },
     methods: {
+        // 获取用户列表
         async getUserList() {
             const { data: res } = await this.$http.get('users', {
                 params: {

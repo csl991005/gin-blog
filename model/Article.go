@@ -46,10 +46,17 @@ func GetArtInfo(id int) (Article, int) {
 }
 
 // todo 查询文章列表
-func GetArticle(pageSize, pageNum int) ([]Article, int, int64) {
+func GetArticle(title string, pageSize, pageNum int) ([]Article, int, int64) {
 	var article []Article
 	var total int64
-	err := db.Preload("Category").Limit(pageSize).Offset((pageNum - 1) * pageSize).Find(&article).Count(&total).Error
+	if title == "" {
+		err := db.Preload("Category").Limit(pageSize).Offset((pageNum - 1) * pageSize).Find(&article).Count(&total).Error
+		if err != nil && err != gorm.ErrRecordNotFound {
+			return nil, errmsg.ERROR, 0
+		}
+		return article, errmsg.SUCCESS, total
+	}
+	err := db.Preload("Category").Where("title LIKE ?", title+"%").Limit(pageSize).Offset((pageNum - 1) * pageSize).Find(&article).Count(&total).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, errmsg.ERROR, 0
 	}
