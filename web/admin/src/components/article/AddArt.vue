@@ -51,7 +51,21 @@
                     </a-upload>
                 </a-form-model-item>
                 <a-form-model-item label="文章内容" prop="content">
-                    <a-input v-model="artInfo.content"></a-input>
+                    <div style="border: 1px solid #ccc">
+                        <Toolbar
+                            style="border-bottom: 1px solid #ccc"
+                            :editor="editor"
+                            :defaultConfig="toolbarConfig"
+                            :mode="mode"
+                        />
+                        <Editor
+                            style="height: 300px; line-height: 100%"
+                            v-model="artInfo.content"
+                            :defaultConfig="editorConfig"
+                            :mode="mode"
+                            @onCreated="onCreated"
+                        />
+                    </div>
                 </a-form-model-item>
                 <a-form-model-item>
                     <a-button
@@ -69,10 +83,33 @@
   
 <script>
 import { Url } from '../../plugin/http'
+
+import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
+const editorConfig = {
+    // JS 语法
+    MENU_CONF: {}
+
+    // 其他属性...
+}
+editorConfig.MENU_CONF['uploadImage'] = {
+    server: 'http://localhost:8080/api/v1/upload',
+    fieldName: 'custom-field-name',
+    headers: {
+        Authorization: `Bearer ${window.sessionStorage.getItem('token')}`
+    },
+    
+    // 继续写其他配置...
+    //【注意】不需要修改的不用写，wangEditor 会去 merge 当前其他配置
+}
 export default {
+    components: { Editor, Toolbar },
     props: ['id'],
     data() {
         return {
+            editor: null,
+            toolbarConfig: {},
+            editorConfig,
+            mode: 'default', // or 'simple'
             artInfo: {
                 id: 0,
                 title: '',
@@ -138,7 +175,15 @@ export default {
             this.getArtInfo(this.id)
         }
     },
+    beforeDestroy() {
+        const editor = this.editor
+        if (editor == null) return
+        editor.destroy() // 组件销毁时，及时销毁编辑器
+    },
     methods: {
+        onCreated(editor) {
+            this.editor = Object.seal(editor) // 一定要用 Object.seal() ，否则会报错
+        },
         // 查询文章信息
         async getArtInfo(id) {
             const { data: res } = await this.$http.get(`article/info/${id}`)
@@ -195,7 +240,6 @@ export default {
                         `article/${id}`,
                         this.artInfo
                     )
-                    console.log(res)
                     if (res.status != 200) {
                         return this.$message.error(res.message)
                     }
@@ -212,4 +256,4 @@ export default {
 }
 </script>
   
-<style scoped></style>
+<style src="@wangeditor/editor/dist/css/style.css"></style>

@@ -20,7 +20,7 @@
                     >
                 </a-col>
 
-                <a-col :span="6" :offset="4">
+                <a-col :span="3" >
                     <a-select
                         defaultValue="请选择分类"
                         style="width: 200px"
@@ -33,6 +33,9 @@
                             >{{ item.name }}</a-select-option
                         >
                     </a-select>
+                </a-col>
+                <a-col :span="1">
+                    <a-button type="info" @click="getArtList">选择全部</a-button>
                 </a-col>
             </a-row>
             <a-table
