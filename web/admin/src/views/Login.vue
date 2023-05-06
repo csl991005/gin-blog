@@ -61,7 +61,7 @@ export default {
                 }
 
                 window.sessionStorage.setItem('token',res.token)
-                this.$router.push('admin/index')
+                this.$router.push('/index')
             })
         }
     },

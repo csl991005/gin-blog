@@ -11,6 +11,15 @@ func InitRouter() {
 	gin.SetMode(utils.AppMode)
 	r := gin.Default()
 	r.Use(middleware.Cors())
+
+	r.LoadHTMLGlob("static/admin/index.html")
+	r.Static("admin/assets", "static/admin/assets")
+	r.StaticFile("admin/favicon.ico", "static/admin/favicon.ico")
+
+	r.GET("admin", func(c *gin.Context) {
+		c.HTML(200, "index.html", nil)
+	})
+
 	auth := r.Group("api/v1")
 	auth.Use(middleware.JwtToken())
 	{

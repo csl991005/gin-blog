@@ -235,7 +235,7 @@ export default {
                         return this.$message.error(res.message)
                     }
                     this.$message.success('添加文章成功')
-                    this.$router.push('/admin/artlist')
+                    this.$router.push('/artlist')
                 } else {
                     const { data: res } = await this.$http.put(
                         `article/${id}`,
@@ -245,7 +245,7 @@ export default {
                         return this.$message.error(res.message)
                     }
                     this.$message.success('更新文章成功')
-                    this.$router.push('/admin/artlist')
+                    this.$router.push('/artlist')
                 }
             })
         },

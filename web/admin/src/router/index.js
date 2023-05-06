@@ -20,7 +20,7 @@ const router = new VueRouter({
       component: Login
     },
     {
-      path: '/admin',
+      path: '/',
       name: 'admin',
       component: Admin,
       children: [
@@ -61,7 +61,7 @@ router.beforeEach((to, from, next) => {
     return next()
   }
 
-  if (!token && to.path === '/admin') {
+  if (!token || to.path === '/admin') {
     next('/login')
   } else {
     next()
