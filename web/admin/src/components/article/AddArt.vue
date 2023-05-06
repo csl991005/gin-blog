@@ -85,22 +85,7 @@
 import { Url } from '../../plugin/http'
 
 import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
-const editorConfig = {
-    // JS 语法
-    MENU_CONF: {}
 
-    // 其他属性...
-}
-editorConfig.MENU_CONF['uploadImage'] = {
-    server: 'http://localhost:8080/api/v1/upload',
-    fieldName: 'custom-field-name',
-    headers: {
-        Authorization: `Bearer ${window.sessionStorage.getItem('token')}`
-    },
-    
-    // 继续写其他配置...
-    //【注意】不需要修改的不用写，wangEditor 会去 merge 当前其他配置
-}
 export default {
     components: { Editor, Toolbar },
     props: ['id'],
@@ -108,7 +93,7 @@ export default {
         return {
             editor: null,
             toolbarConfig: {},
-            editorConfig,
+            editorConfig: { MENU_CONF: {}, placeholder: '请输入文章内容' },
             mode: 'default', // or 'simple'
             artInfo: {
                 id: 0,
@@ -174,6 +159,16 @@ export default {
         if (this.id) {
             this.getArtInfo(this.id)
         }
+        this.editorConfig.MENU_CONF['uploadImage'] = {
+            server: 'http://localhost:8080/api/v1/upload',
+            fieldName: 'custom-field-name',
+            headers: {
+                Authorization: `Bearer ${window.sessionStorage.getItem(
+                    'token'
+                )}`
+            },
+            customUpload: this.customUpload
+        }
     },
     beforeDestroy() {
         const editor = this.editor
@@ -181,6 +176,12 @@ export default {
         editor.destroy() // 组件销毁时，及时销毁编辑器
     },
     methods: {
+        async customUpload(file, insertFn) {
+            let formData = new FormData()
+            formData.append('file', file)
+            const { data: res } = await this.$http.post('/upload', formData)
+            insertFn(res.url)
+        },
         onCreated(editor) {
             this.editor = Object.seal(editor) // 一定要用 Object.seal() ，否则会报错
         },
