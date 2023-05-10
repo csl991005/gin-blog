@@ -1,9 +1,9 @@
 <template>
     <div>
-        <v-app-bar app color="primary">
+        <v-app-bar app color="indigo darken-2">
             <v-avatar color="grey" size="40"> </v-avatar>
             <v-container class="py-0 fill-height">
-                <v-btn text color="white">首页</v-btn>
+                <v-btn text color="white" @click="$router.push('/')">首页</v-btn>
                 <v-btn
                     v-for="item in cateList"
                     :key="item.id"
