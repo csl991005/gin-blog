@@ -40,7 +40,7 @@ func InitDb() {
 		os.Exit(1)
 	}
 
-	_ = db.AutoMigrate(&User{}, &Article{}, &Category{})
+	_ = db.AutoMigrate(&User{}, &Article{}, &Category{}, &Profile{})
 
 	sqlDB, _ := db.DB()
 
