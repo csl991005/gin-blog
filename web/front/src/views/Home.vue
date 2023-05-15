@@ -26,8 +26,6 @@ import TopBar from '@/components/TopBar.vue'
 import Footer from '@/components/Footer.vue'
 import Nav from '@/components/Nav.vue'
 export default {
-    name: 'Home',
-
     components: { TopBar, Footer, Nav }
 }
 </script>

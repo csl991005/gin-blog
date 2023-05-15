@@ -4,7 +4,13 @@ import router from './router'
 import vuetify from './plugins/vuetify'
 import './plugins/http'
 
+import moment from 'moment/moment'
+
 Vue.config.productionTip = false
+
+Vue.filter('dateformat', function (indate, outdate) {
+  return moment(indate).format(outdate)
+})
 
 new Vue({
   router,
