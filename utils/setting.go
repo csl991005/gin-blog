@@ -24,7 +24,7 @@ var (
 )
 
 func init() {
-	file, err := ini.Load("config/config-example.ini")
+	file, err := ini.Load("config/config.ini")
 	if err != nil {
 		fmt.Println("load config file error,check out file path", err)
 	}
