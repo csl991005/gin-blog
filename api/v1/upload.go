@@ -6,12 +6,13 @@ import (
 	"github.com/ginblog/utils"
 	"github.com/ginblog/utils/errmsg"
 	"net/http"
+	"time"
 )
 
 func UpLoad(c *gin.Context) {
 	Options := utils.Options
 	file, fileHeader, _ := c.Request.FormFile("file")
-	dst := "./" + "storage/" + fileHeader.Filename
+	dst := "./" + "storage/" + time.Now().Format("20060102150405") + fileHeader.Filename
 	fileSize := fileHeader.Size
 
 	if Options != "disk" {
@@ -25,8 +26,8 @@ func UpLoad(c *gin.Context) {
 	} else {
 		c.SaveUploadedFile(fileHeader, dst)
 		c.JSON(http.StatusOK, gin.H{
-			"status":  code,
-			"message": errmsg.GetErrMsg(code),
+			"status":  http.StatusOK,
+			"message": errmsg.GetErrMsg(http.StatusOK),
 			"url":     dst,
 		})
 	}
