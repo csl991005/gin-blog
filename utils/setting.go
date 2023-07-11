@@ -21,6 +21,7 @@ var (
 	SecretKey   string
 	Bucket      string
 	QiniuServer string
+	Options     string
 )
 
 func init() {
@@ -53,4 +54,5 @@ func LoadQiniu(file *ini.File) {
 	SecretKey = file.Section("qiniu").Key("SecretKey").String()
 	Bucket = file.Section("qiniu").Key("Bucket").String()
 	QiniuServer = file.Section("qiniu").Key("QiniuServer").String()
+	Options = file.Section("qiniu").Key("Options").String()
 }

@@ -9,6 +9,7 @@ import (
 	"mime/multipart"
 )
 
+// 七牛云存储
 var AccessKey = utils.AccessKey
 var SecretKey = utils.SecretKey
 var Bucket = utils.Bucket

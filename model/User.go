@@ -38,7 +38,7 @@ func CheckUpUser(id int, name string) int {
 
 // 新增用户
 func CreateUser(data *User) int {
-	//data.Password = EncodePassword(data.Password)
+	// data.Password = EncodePassword(data.Password)
 	err := db.Create(&data).Error
 	if err != nil {
 		return errmsg.ERROR // 500
@@ -86,7 +86,7 @@ func EditUser(id int, data *User) int {
 	return errmsg.SUCCESS // 200
 }
 
-//删除用户
+// 删除用户
 func DeleteUser(id int) int {
 	var user User
 	err := db.Where("id = ?", id).Delete(&user).Error
@@ -97,7 +97,7 @@ func DeleteUser(id int) int {
 }
 
 // 密码加密
-func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
+func (u *User) BeforeCreate(_ *gorm.DB) (err error) {
 	u.Password = EncodePassword(u.Password)
 	return nil
 }
@@ -115,10 +115,11 @@ func EncodePassword(password string) string {
 func CheckLogin(username, password string) int {
 	var user User
 	db.Where("username = ?", username).First(&user)
+
+	passWordError := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 	if user.ID == 0 {
 		return errmsg.ERROR_USER_NOT_EXIST
 	}
-	passWordError := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 	if passWordError != nil {
 		return errmsg.ERROR_PASSWORD_WRONG
 	}

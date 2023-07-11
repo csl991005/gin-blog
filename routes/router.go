@@ -24,7 +24,7 @@ func InitRouter() {
 	auth.Use(middleware.JwtToken())
 	{
 		// 用户模块的路由接口
-		//auth.GET("user/:id", v1.UserExist)
+		// auth.GET("user/:id", v1.UserExist)
 		auth.PUT("user/:id", v1.EditUser)
 		auth.DELETE("user/:id", v1.DeleteUser)
 		// 分类模块的路由接口
