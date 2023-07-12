@@ -1,24 +1,49 @@
 package routes
 
 import (
+	"github.com/gin-contrib/multitemplate"
 	"github.com/gin-gonic/gin"
 	v1 "github.com/ginblog/api/v1"
 	"github.com/ginblog/middleware"
 	"github.com/ginblog/utils"
+	"net/http"
 )
+
+func createMyRender() multitemplate.Renderer {
+	r := multitemplate.NewRenderer()
+	r.AddFromFiles("admin", "web/admin/dist/index.html")
+	r.AddFromFiles("front", "web/front/dist/index.html")
+	return r
+}
 
 func InitRouter() {
 	gin.SetMode(utils.AppMode)
 	r := gin.Default()
 	r.Use(middleware.Cors())
 
-	r.LoadHTMLGlob("static/admin/index.html")
-	r.Static("admin/assets", "static/admin/assets")
-	r.StaticFile("admin/favicon.ico", "static/admin/favicon.ico")
+	// 允许不安全代理
+	_ = r.SetTrustedProxies(nil)
+
+	r.HTMLRender = createMyRender()
+
+	r.Static("/admin", "./web/admin/dist")
+	r.Static("/static", "./web/front/dist/static")
+	r.StaticFile("/favicon.ico", "/web/front/dist/favicon.ico")
 
 	r.GET("admin", func(c *gin.Context) {
-		c.HTML(200, "index.html", nil)
+		c.HTML(http.StatusOK, "admin", nil)
 	})
+	r.GET("/", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "front", nil)
+	})
+
+	// r.LoadHTMLGlob("static/admin/index.html")
+	// r.Static("admin/assets", "static/admin/assets")
+	// r.StaticFile("admin/favicon.ico", "static/admin/favicon.ico")
+	//
+	// r.GET("admin", func(c *gin.Context) {
+	// 	c.HTML(200, "index.html", nil)
+	// })
 
 	auth := r.Group("api/v1")
 	auth.Use(middleware.JwtToken())
