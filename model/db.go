@@ -7,6 +7,7 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
+	"log"
 	"os"
 	"time"
 )
@@ -40,7 +41,9 @@ func InitDb() {
 		os.Exit(1)
 	}
 
-	_ = db.AutoMigrate(&User{}, &Article{}, &Category{}, &Profile{})
+	if err := db.AutoMigrate(&User{}, &Article{}, &Category{}, &Profile{}, &Podcast{}); err != nil {
+		log.Println(err)
+	}
 
 	sqlDB, _ := db.DB()
 

@@ -63,6 +63,9 @@ func InitRouter() {
 		// 上传接口
 		auth.POST("upload", v1.UpLoad)
 		auth.PUT("profile/:id", v1.UpdateProfile)
+		// 播客接口
+		auth.POST("podcast", v1.AddPodcast)
+		auth.DELETE("podcast", v1.DeletePodcast)
 	}
 	router := r.Group("api/v1")
 	{
