@@ -37,6 +37,8 @@ func InitRouter() {
 		c.HTML(http.StatusOK, "front", nil)
 	})
 
+	r.Static("/storage", "./storage")
+
 	// r.LoadHTMLGlob("static/admin/index.html")
 	// r.Static("admin/assets", "static/admin/assets")
 	// r.StaticFile("admin/favicon.ico", "static/admin/favicon.ico")
