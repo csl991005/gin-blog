@@ -1,0 +1,32 @@
+name: bug反馈
+description: "提交 bug"
+body:
+  - type: checkboxes
+    attributes:
+      label: 完整性要求
+      description: |-
+        请勾选以下所有选项以证明您已经阅读并理解了以下要求，否则该 issue 将被关闭。
+      options:
+        - label: 我保证阅读了文档，了解所有我编写的配置文件项的含义，而不是大量堆砌看似有用的选项或默认值。
+          required: true
+        - label: 我提供了完整的配置文件和日志，而不是出于自己的判断只给出截取的部分。
+          required: true
+        - label: 我搜索了 issues, 没有发现已提出的类似问题。
+          required: true
+        - label: 问题在 Release 最新的版本上可以成功复现
+          required: true
+  - type: textarea
+    attributes:
+      label: 描述
+      description: |-
+        请提供错误的详细描述。以及你认为有价值的信息。
+        如果问题在更新后出现，请提供**具体**出现问题的版本号。
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: 重现方式
+      description: |-
+        基于你下面提供的配置，提供重现BUG方法。
+    validations:
+      required: true
