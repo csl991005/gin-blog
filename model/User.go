@@ -38,7 +38,7 @@ func CheckUpUser(id int, name string) int {
 
 // 新增用户
 func CreateUser(data *User) int {
-	// data.Password = EncodePassword(data.Password)
+	//data.Password = EncodePassword(data.Password)
 	err := db.Create(&data).Error
 	if err != nil {
 		return errmsg.ERROR // 500
@@ -84,6 +84,23 @@ func EditUser(id int, data *User) int {
 		return errmsg.ERROR // 500
 	}
 	return errmsg.SUCCESS // 200
+}
+
+// 更新密码
+func UpdatePassword(id int, data *User) int {
+	var user User
+	if data.Password == "" {
+		return errmsg.ERROR_PASSWORD_EMPTY
+	}
+	HashPassword := EncodePassword(data.Password)
+
+	var maps = make(map[string]interface{})
+	maps["password"] = HashPassword
+	err := db.Model(&user).Where("id = ?", id).Updates(maps).Error
+	if err != nil {
+		return errmsg.ERROR
+	}
+	return errmsg.SUCCESS
 }
 
 // 删除用户

@@ -53,7 +53,9 @@ func InitRouter() {
 		// 用户模块的路由接口
 		// auth.GET("user/:id", v1.UserExist)
 		auth.PUT("user/:id", v1.EditUser)
+		auth.PATCH("user/:id", v1.UpdatePassword)
 		auth.DELETE("user/:id", v1.DeleteUser)
+
 		// 分类模块的路由接口
 		auth.POST("category/add", v1.AddCategory)
 		auth.PUT("category/:id", v1.EditCategory)
