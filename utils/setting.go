@@ -9,6 +9,7 @@ var (
 	AppMode  string
 	HttpPort string
 	JwtKey   string
+	BaseURL  string
 
 	Db         string
 	DbHost     string
@@ -38,6 +39,7 @@ func LoadServer(file *ini.File) {
 	AppMode = file.Section("server").Key("AppMode").MustString("debug")
 	HttpPort = file.Section("server").Key("HttpPort").MustString(":3000")
 	JwtKey = file.Section("server").Key("Jwtkey").MustString("adioh4389ng")
+	BaseURL = file.Section("server").Key("BaseURL").MustString("http://localhost:3000")
 }
 
 func LoadData(file *ini.File) {
