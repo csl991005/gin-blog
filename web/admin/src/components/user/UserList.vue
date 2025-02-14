@@ -4,112 +4,69 @@
         <a-card>
             <a-row :gutter="20">
                 <a-col :span="6">
-                    <a-input-search
-                        v-model="queryParam.username"
-                        placeholder="请输入用户名查找"
-                        enter-button
-                        allowClear
-                        @search="getUserList"
-                    />
+                    <a-input-search v-model="queryParam.username" placeholder="请输入用户名查找" enter-button allowClear
+                        @search="getUserList" />
                 </a-col>
                 <a-col :span="4">
-                    <a-button type="primary" @click="addUserVisible = true"
-                        >新增</a-button
-                    >
+                    <a-button type="primary" @click="addUserVisible = true">新增</a-button>
                 </a-col>
             </a-row>
-            <a-table
-                bordered
-                rowKey="ID"
-                :columns="columns"
-                :pagination="pagination"
-                :dataSource="userlist"
-                @change="handleTableChange"
-            >
+            <a-table bordered rowKey="ID" :columns="columns" :pagination="pagination" :dataSource="userlist"
+                @change="handleTableChange">
                 <span slot="role" slot-scope="role">{{
                     role == 1 ? '管理员' : '订阅者'
                 }}</span>
                 <template slot="action" slot-scope="data">
                     <div class="actionSlot">
-                        <a-button
-                            type="primary"
-                            icon="edit"
-                            style="margin-right: 15px"
-                            @click="editUser(data.ID)"
-                            >编辑</a-button
-                        >
-                        <a-button
-                            type="danger"
-                            icon="delete"
-                            @click="deleteUser(data.ID)"
-                            >删除</a-button
-                        >
+                        <a-button type="primary" icon="edit" style="margin-right: 15px"
+                            @click="editUser(data.ID)">编辑</a-button>
+                        <a-button type="danger" icon="delete" @click="deleteUser(data.ID)">删除</a-button>
                     </div>
                 </template>
             </a-table>
         </a-card>
 
         <!-- 新增用户区域 -->
-        <a-modal
-            closable
-            width="60%"
-            title="新增用户"
-            :visible="addUserVisible"
-            @ok="addUserOk"
-            @cancel="addUserCancel"
-            destroyOnClose
-        >
-            <a-form-model
-                :model="newUser"
-                :rules="addUserRules"
-                ref="addUserRef"
-            >
+        <a-modal closable width="60%" title="新增用户" :visible="addUserVisible" @ok="addUserOk" @cancel="addUserCancel"
+            destroyOnClose>
+            <a-form-model :model="newUser" :rules="addUserRules" ref="addUserRef">
                 <a-form-model-item label="用户名" prop="username">
                     <a-input v-model="newUser.username"></a-input>
                 </a-form-model-item>
                 <a-form-model-item has-feedback label="密码" prop="password">
-                    <a-input-password
-                        v-model="newUser.password"
-                    ></a-input-password>
+                    <a-input-password v-model="newUser.password"></a-input-password>
                 </a-form-model-item>
-                <a-form-model-item
-                    has-feedback
-                    label="确认密码"
-                    prop="checkpass"
-                >
-                    <a-input-password
-                        v-model="newUser.checkpass"
-                    ></a-input-password>
+                <a-form-model-item has-feedback label="确认密码" prop="checkpass">
+                    <a-input-password v-model="newUser.checkpass"></a-input-password>
                 </a-form-model-item>
+                <a-form-model-item label="角色身份">
+                    <a-select default-value="2" style="width: 120px" @change="roleChange">
+                        <a-select-option value="2">
+                            游客
+                        </a-select-option>
+                        <a-select-option value="1">
+                            管理员
+                        </a-select-option>
+                    </a-select>
+                </a-form-model-item>
+
             </a-form-model>
         </a-modal>
         <!-- 编辑用户区域 -->
-        <a-modal
-            closable
-            width="60%"
-            title="编辑用户"
-            :visible="editUserVisible"
-            @ok="editUserOk"
-            @cancel="editUserCancel"
-            destroyOnClose
-        >
+        <a-modal closable width="60%" title="编辑用户" :visible="editUserVisible" @ok="editUserOk" @cancel="editUserCancel"
+            destroyOnClose>
             <a-form-model :model="userInfo" :rules="userRules" ref="addUserRef">
                 <a-form-model-item label="用户名" prop="username">
                     <a-input v-model="userInfo.username"></a-input>
                 </a-form-model-item>
                 <a-form-model-item label="是否为管理员" prop="role">
-                    <a-switch
-                        checked-children="是"
-                        un-checked-children="否"
-                        default-checked
-                        @change="adminChange"
-                    />
+                    <a-switch checked-children="是" un-checked-children="否" default-checked @change="adminChange" />
                 </a-form-model-item>
             </a-form-model>
         </a-modal>
     </div>
 </template>
-  
+
 <script>
 const columns = [
     {
@@ -366,6 +323,9 @@ export default {
                 this.userInfo.role = 2
             }
         },
+        roleChange(value){
+            this.newUser.role = Number(value)
+        },
         // 编辑用户
         async editUser(id) {
             this.editUserVisible = true
@@ -402,7 +362,7 @@ export default {
     }
 }
 </script>
-  
+
 <style scoped>
 .actionSlot {
     display: flex;

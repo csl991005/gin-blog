@@ -1,6 +1,10 @@
 package model
 
-import "github.com/ginblog/utils/errmsg"
+import (
+	"log"
+
+	"github.com/ginblog/utils/errmsg"
+)
 
 type Profile struct {
 	ID     int    `gorm:"primaryKey" json:"id"`
@@ -28,7 +32,8 @@ func GetProfile(id int) (Profile, int) {
 // UpdateProfile 更新个人信息设置
 func UpdateProfile(id int, data *Profile) int {
 	var profile Profile
-	err = db.Model(&profile).Where("ID = ?", id).Updates(&data).Error
+	log.Println(*data)
+	err = db.Model(&profile).Where("ID = ?", id).Updates(*data).Error
 	if err != nil {
 		return errmsg.ERROR
 	}

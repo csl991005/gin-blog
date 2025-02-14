@@ -1,17 +1,18 @@
 package model
 
 import (
+	"log"
+
 	"github.com/ginblog/utils/errmsg"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
-	"log"
 )
 
 type User struct {
 	gorm.Model
 	Username string `gorm:"type:varchar(20);not null" json:"username" validate:"required,min=4,max=12" label:"用户名"`
 	Password string `gorm:"type:varchar(200);not null" json:"password" validate:"required,min=6,max=20" label:"密码"`
-	Role     int    `gorm:"type:int;DEFAULT:2" json:"role" validate:"required,gte=2" label:"角色"` // 1 为管理员
+	Role     int    `gorm:"type:int;DEFAULT:2" json:"role" validate:"required" label:"角色"` // 1 为管理员
 }
 
 // 查询用户是否存在
@@ -34,6 +35,24 @@ func CheckUpUser(id int, name string) int {
 		return errmsg.ERROR_USERNAME_USED // 1001
 	}
 	return errmsg.SUCCESS // 200
+}
+
+func CreateAdminUser() {
+	var count int64
+
+	err := db.Model(&User{}).Count(&count).Error
+	if err != nil {
+		return
+	}
+
+	if count == 0 {
+		defaultUser := User{
+			Username: "admin",
+			Password: "123456",
+			Role:     1,
+		}
+		db.Create(&defaultUser)
+	}
 }
 
 // 新增用户

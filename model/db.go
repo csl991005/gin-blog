@@ -2,14 +2,15 @@ package model
 
 import (
 	"fmt"
+	"log"
+	"os"
+	"time"
+
 	"github.com/ginblog/utils"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
-	"log"
-	"os"
-	"time"
 )
 
 var db *gorm.DB
@@ -44,6 +45,8 @@ func InitDb() {
 	if err := db.AutoMigrate(&User{}, &Article{}, &Category{}, &Profile{}, &Podcast{}); err != nil {
 		log.Println(err)
 	}
+
+	CreateAdminUser()
 
 	sqlDB, _ := db.DB()
 
